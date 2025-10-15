@@ -26,34 +26,68 @@
 # java -jar target/${NAME}-${VERSION}.jar
 
 
-#!/usr/bin/env bash
+# #!/bin/bash
 
-set -e  # Exit on error
-set -x  # Debug mode
+# set -e  # Exit on error
+# set -x  # Debug mode
 
-# Install the jar and evaluate project metadata
-mvn jar:jar install:install help:evaluate -Dexpression=project.name
+# # Install the jar and evaluate project metadata
+# mvn jar:jar install:install help:evaluate -Dexpression=project.name
 
-# Get artifact name and version
+# # Get artifact name and version
+# NAME=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.name)
+# VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+
+# JAR_FILE="target/${NAME}-${VERSION}.jar"
+
+# # Check if jar file exists
+# if [[ ! -f "$JAR_FILE" ]]; then
+#     echo "❌ JAR file not found: $JAR_FILE"
+#     exit 1
+# fi
+
+# # Rename JAR for Docker if needed
+# cp "$JAR_FILE" target/app.jar
+
+# # Build Docker image
+# docker build -t ${NAME}:${VERSION} .
+
+# # Optional: Stop and remove previous container
+# docker rm -f ${NAME} || true
+
+# # Run Docker container
+# docker run -d -p 8090:8090 --name ${NAME} ${NAME}:${VERSION}
+
+
+#!/bin/bash
+set -e  # Exit immediately on error
+set -x  # Print commands for debugging
+
+# Build your Maven project and skip tests to speed up build (remove -DskipTests if needed)
+mvn clean package -DskipTests
+
+# Extract artifact name and version from pom.xml
 NAME=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.name)
 VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
 
+# Define the JAR file path
 JAR_FILE="target/${NAME}-${VERSION}.jar"
 
-# Check if jar file exists
+# Check if the JAR file exists
 if [[ ! -f "$JAR_FILE" ]]; then
     echo "❌ JAR file not found: $JAR_FILE"
     exit 1
 fi
 
-# Rename JAR for Docker if needed
+# Copy the JAR to a consistent name for Dockerfile COPY instruction
 cp "$JAR_FILE" target/app.jar
 
-# Build Docker image
-docker build -t ${NAME}:${VERSION} .
+# Build the Docker image using the current directory as context
+docker build -t "${NAME}:${VERSION}" .
 
-# Optional: Stop and remove previous container
-docker rm -f ${NAME} || true
+# Stop and remove any running container with the same name (ignore errors)
+docker rm -f "${NAME}" || true
 
-# Run Docker container
-docker run -d -p 8090:8090 --name ${NAME} ${NAME}:${VERSION}
+# Run the Docker container, mapping port 8090 of the container to 8090 on the host
+docker run -d -p 8090:8090 --name "${NAME}" "${NAME}:${VERSION}"
+
