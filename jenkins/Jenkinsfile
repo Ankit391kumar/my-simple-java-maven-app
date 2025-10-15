@@ -40,7 +40,7 @@ pipeline {
         stage('Build') {
             agent { label 'slave1' }
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh 'mvn clean package'
             }
         }
 
