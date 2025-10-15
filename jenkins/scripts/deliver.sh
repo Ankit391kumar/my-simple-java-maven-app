@@ -64,7 +64,7 @@ set -e  # Exit immediately on error
 set -x  # Print commands for debugging
 
 # Set Maven environment (adjust the path if needed)
-export M2_HOME=/opt/apache-maven-3.9.7
+export M2_HOME=/opt/apache-maven-3.9.9
 export PATH=$M2_HOME/bin:$PATH
 
 # Build your Maven project and skip tests to speed up build (remove -DskipTests if needed)
