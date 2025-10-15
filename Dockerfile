@@ -5,7 +5,7 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copy the built JAR file into the container
-COPY target/my-app-1.0-SNAPSHOT.jar app.jar
+COPY  /home/ubuntu/jenkins_home/workspace/Testing-java-project/target/my-app-1.0-SNAPSHOT.jar
 
 # Run the JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
