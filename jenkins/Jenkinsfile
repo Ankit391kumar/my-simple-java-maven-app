@@ -30,9 +30,12 @@
 
 
 pipeline {
+    agent none  // Required top-level agent when using per-stage agents
+
     options {
         skipStagesAfterUnstable()
     }
+
     stages {
         stage('Build') {
             agent { label 'slave1' }
@@ -40,6 +43,7 @@ pipeline {
                 sh 'mvn -B -DskipTests clean package'
             }
         }
+
         stage('Test') {
             agent { label 'slave1' }
             steps {
@@ -51,8 +55,9 @@ pipeline {
                 }
             }
         }
+
         stage('Deliver') {
-            agent { label 'slave2' } // Docker runs on slave2
+            agent { label 'slave2' }  // Docker runs on slave2
             steps {
                 sh './jenkins/scripts/deliver.sh'
             }
