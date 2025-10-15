@@ -63,6 +63,10 @@
 set -e  # Exit immediately on error
 set -x  # Print commands for debugging
 
+# Set Maven environment (adjust the path if needed)
+export M2_HOME=/opt/apache-maven-3.9.7
+export PATH=$M2_HOME/bin:$PATH
+
 # Build your Maven project and skip tests to speed up build (remove -DskipTests if needed)
 mvn clean package -DskipTests
 
@@ -90,4 +94,3 @@ docker rm -f "${NAME}" || true
 
 # Run the Docker container, mapping port 8090 of the container to 8090 on the host
 docker run -d -p 8090:8090 --name "${NAME}" "${NAME}:${VERSION}"
-
