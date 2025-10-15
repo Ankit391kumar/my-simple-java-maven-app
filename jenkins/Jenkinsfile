@@ -1,3 +1,4 @@
+// Simple pipeline using a single agent
 // pipeline {
 //     agent any
 //     options {
@@ -19,18 +20,16 @@
 //                 }
 //             }
 //         }
-//         stage('Deliver') { 
+//         stage('Deliver') {
 //             steps {
-//                 sh './jenkins/scripts/deliver.sh' 
+//                 sh './jenkins/scripts/deliver.sh'
 //             }
 //         }
 //     }
 // }
 
-
-
 pipeline {
-    agent none
+    agent none  // Required top-level agent when using per-stage agents
 
     options {
         skipStagesAfterUnstable()
@@ -40,14 +39,14 @@ pipeline {
         stage('Build') {
             agent { label 'slave1' }
             steps {
-                sh 'mvn clean package -DskipTests'  // skip tests here
+                sh 'mvn clean package'
             }
         }
 
         stage('Test') {
             agent { label 'slave1' }
             steps {
-                sh 'mvn test'  // run tests here
+                sh 'mvn test'
             }
             post {
                 always {
@@ -57,7 +56,7 @@ pipeline {
         }
 
         stage('Deliver') {
-            agent { label 'slave2' }
+            agent { label 'slave2' }  // Docker runs on slave2
             steps {
                 sh './jenkins/scripts/deliver.sh'
             }
